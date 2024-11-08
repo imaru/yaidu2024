@@ -4,8 +4,8 @@ library(fmsb)
 
 ncat<-7
 nflv<-7
-catlab<-c('くん煙臭','焙乾香','甘い','肉質','油臭','酸臭','その他')
-flblab<-c('油っぽさ','コクのある','収斂味・苦味','塩味','甘味','旨味','酸味')
+flavorlab<-c('くん煙臭','焙乾香','甘い','肉質','油臭','酸臭','その他')
+tastelab<-c('油っぽさ','コクのある','収斂味・苦味','塩味','甘味','旨味','酸味')
 
 
 fn<-choose.files()
@@ -51,20 +51,34 @@ for (smp in samples){
   }
 }
 
-mmflavor<-data.frame(
-  a=c(11,1),
-  b=c(11,1),
-  c=c(11,1),
-  d=c(11,1),
-  e=c(11,1),
-  f=c(11,1),
-  g=c(11,1)
+mm<-data.frame(
+  a=c(12,1),
+  b=c(12,1),
+  c=c(12,1),
+  d=c(12,1),
+  e=c(12,1),
+  f=c(12,1),
+  g=c(12,1)
 )
+
+mmflavor<-mm
+mmtaste<-mm
+
 
 meandat<-data.frame(samplemean)
 flavor<-meandat[,1:7]
 taste<-meandat[,9:15]
-colnames(flavor)<-catlab
-colnames(mmflavor)<-catlab
+colnames(flavor)<-flavorlab
+colnames(mmflavor)<-flavorlab
+
+colnames(taste)<-tastelab
+colnames(mmtaste)<-tastelab
+
 flavor<-rbind(mmflavor,flavor)
-radarchart(flavor, axistype = 2, seg=5, plty=1, vlcex=1, centerzero=TRUE, vlabels = colnames(flavor))
+taste<-rbind(mmtaste, taste)
+
+# 風味
+radarchart(flavor, axistype = 2, seg=6, plty=1, vlcex=1, centerzero=TRUE, vlabels = colnames(flavor))
+
+# 味
+radarchart(taste, axistype = 2, seg=6, plty=1, vlcex=1, centerzero=TRUE, vlabels = colnames(taste))
