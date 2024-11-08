@@ -2,10 +2,11 @@ library(qualtRics)
 library(ggplot2)
 library(fmsb)
 
-ncat<-8
+ncat<-7
 nflv<-7
 catlab<-c('くん煙臭','焙乾香','甘い','肉質','油臭','酸臭','その他')
 flblab<-c('油っぽさ','コクのある','収斂味・苦味','塩味','甘味','旨味','酸味')
+
 
 fn<-choose.files()
 dat<-qualtRics::read_survey(fn)
@@ -29,21 +30,41 @@ for (i in seq(1,nrow(dat))){
   catdat<-rbind(catdat,c(dat$Q3[i],dat$Q2[i],'cat7', mean(c(dat$Q1_22[i],dat$Q1_23[i],dat$Q1_24[i]))))
   catdat<-rbind(catdat,c(dat$Q3[i],dat$Q2[i],'cat8', mean(c(dat$Q1_25[i],dat$Q1_26[i],dat$Q1_27[i],dat$Q1_28[i],dat$Q1_29[i],dat$Q1_30[i],dat$Q1_31[i]))))
   catdat<-rbind(catdat,c(dat$Q3[i],dat$Q2[i],'cat9', mean(c(dat$Q1_32[i],dat$Q1_33[i]))))
-  catdat<-rbind(catdat,c(dat$Q3[i],dat$Q2[i],'cat10', mean(c(dat$Q1_34[i],dat$Q1_35[i],dat$Q1_36[i],dat$Q1_37[i],dat$Q1_38[i],dat$Q1_39[i]))))
+  catdat<-rbind(catdat,c(dat$Q3[i],dat$Q2[i],'cat10', dat$Q1_34[i]))
+  catdat<-rbind(catdat,c(dat$Q3[i],dat$Q2[i],'cat11', dat$Q1_35[i]))
+  catdat<-rbind(catdat,c(dat$Q3[i],dat$Q2[i],'cat12', dat$Q1_36[i]))
+  catdat<-rbind(catdat,c(dat$Q3[i],dat$Q2[i],'cat13', dat$Q1_37[i]))
+  catdat<-rbind(catdat,c(dat$Q3[i],dat$Q2[i],'cat14', dat$Q1_38[i]))
+  catdat<-rbind(catdat,c(dat$Q3[i],dat$Q2[i],'cat15', dat$Q1_39[i]))
 }
 colnames(catdat)<-c('panel','sample','category','value')
 
 catdat<-catdat[!is.na(catdat$panel),]
 catdat<-catdat[!is.na(catdat$sample),]
 
-samplemean<-matrix(NA,nrow=nsample,ncol=10)
+samplemean<-matrix(NA,nrow=nsample,ncol=15)
 for (smp in samples){
-  for (cat in 1:10){
+  for (cat in 1:15){
     data<-catdat[catdat$category==paste('cat',cat,sep='') & catdat$sample==smp,]$value
     print(data)
     samplemean[smp,cat]<-mean(as.numeric(data))
   }
 }
 
+mmflavor<-data.frame(
+  a=c(11,1),
+  b=c(11,1),
+  c=c(11,1),
+  d=c(11,1),
+  e=c(11,1),
+  f=c(11,1),
+  g=c(11,1)
+)
+
 meandat<-data.frame(samplemean)
-colnames(meandat)<-c('')
+flavor<-meandat[,1:7]
+taste<-meandat[,9:15]
+colnames(flavor)<-catlab
+colnames(mmflavor)<-catlab
+flavor<-rbind(mmflavor,flavor)
+radarchart(flavor, axistype = 2, seg=5, plty=1, vlcex=1, centerzero=TRUE, vlabels = colnames(flavor))
