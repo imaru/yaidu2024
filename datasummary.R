@@ -41,24 +41,25 @@ colnames(catdat)<-c('panel','sample','category','value')
 
 catdat<-catdat[!is.na(catdat$panel),]
 catdat<-catdat[!is.na(catdat$sample),]
+catdat$value<-as.numeric(catdat$value)-6
 
 samplemean<-matrix(NA,nrow=nsample,ncol=15)
 for (smp in samples){
   for (cat in 1:15){
     data<-catdat[catdat$category==paste('cat',cat,sep='') & catdat$sample==smp,]$value
     print(data)
-    samplemean[smp,cat]<-mean(as.numeric(data))
+    samplemean[smp,cat]<-mean(data)
   }
 }
 
 mm<-data.frame(
-  a=c(12,1),
-  b=c(12,1),
-  c=c(12,1),
-  d=c(12,1),
-  e=c(12,1),
-  f=c(12,1),
-  g=c(12,1)
+  a=c(6,1),
+  b=c(6,1),
+  c=c(6,1),
+  d=c(6,1),
+  e=c(6,1),
+  f=c(6,1),
+  g=c(6,1)
 )
 
 mmflavor<-mm
