@@ -48,7 +48,7 @@ for (smp in samples){
   for (cat in 1:15){
     data<-catdat[catdat$category==paste('cat',cat,sep='') & catdat$sample==smp,]$value
     print(data)
-    samplemean[smp,cat]<-mean(data)
+    samplemean[smp,cat]<-mean(data, na.rm = T)
   }
 }
 
@@ -78,8 +78,52 @@ colnames(mmtaste)<-tastelab
 flavor<-rbind(mmflavor,flavor)
 taste<-rbind(mmtaste, taste)
 
+# inddat<-matrix(NA,npanel,15,nsample)
+# for (pnl in panels){
+#   for (smp in samples){
+#     for (cat in 1:15){
+#       
+#     }
+#   }
+# }
+
+par(mfrow = c(1, 2))
+
 # 風味
-radarchart(flavor, axistype = 2, seg=6, plty=1, vlcex=1, centerzero=TRUE, vlabels = colnames(flavor))
+radarchart(flavor,
+           cglty = 1,       # Grid line type
+           cglcol = "gray", # Grid line color
+           cglwd = 1,       # Line width of the grid
+           pcol=1:nsample,
+           plwd = 3,        # Width of the line
+           plty = 1,        # Line type of the line 
+           axistype = 0, 
+           seg=6, 
+           vlcex=0.8, 
+           centerzero=TRUE, 
+           vlabels = colnames(flavor))
+legend("bottomleft",
+       legend = paste("S", 1:nsample),
+       bty = "n", pch = 20, col = 1:nsample,
+       text.col = "grey25", cex = 0.7)
 
 # 味
-radarchart(taste, axistype = 2, seg=6, plty=1, vlcex=1, centerzero=TRUE, vlabels = colnames(taste))
+radarchart(taste,
+           cglty = 1,       # Grid line type
+           cglcol = "gray", # Grid line color
+           cglwd = 1,       # Line width of the grid
+           pcol=1:nsample,
+           plwd = 3,        # Width of the line
+           plty = 1,        # Line type of the line 
+           axistype = 0, 
+           seg=6, 
+           vlcex=0.8, 
+           centerzero=TRUE, 
+           vlabels = colnames(taste))
+
+legend("bottomleft",
+       legend = paste("S", 1:nsample),
+       bty = "n", pch = 20, col = 1:nsample,
+       text.col = "grey25", cex=0.7)
+
+
