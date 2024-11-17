@@ -2,6 +2,8 @@ library(qualtRics)
 library(ggplot2)
 library(fmsb)
 
+par(family = "Yu Gothic")
+
 ncat<-7
 nflv<-7
 flavorlab<-c('くん煙臭','焙乾香','甘い','肉質','油臭','酸臭','その他')
@@ -78,14 +80,77 @@ colnames(mmtaste)<-tastelab
 flavor<-rbind(mmflavor,flavor)
 taste<-rbind(mmtaste, taste)
 
-# inddat<-matrix(NA,npanel,15,nsample)
-# for (pnl in panels){
-#   for (smp in samples){
-#     for (cat in 1:15){
-#       
-#     }
-#   }
-# }
+
+
+#inddat<-matrix(NA,npanel,15,nsample)
+inddat<-array(NA,c(npanel,15,nsample))
+cflavor<-data.frame(matrix(NA,4,7))
+cflavor[1:2,]<-mmflavor
+colnames(cflavor)<-flavorlab
+ctaste<-data.frame(matrix(NA,4,7))
+ctaste[1:2,]<-mmtaste
+colnames(ctaste)<-tastelab
+
+
+for (pnl in panels){
+  #pdf(cat('panel',as.character(pnl),'.pdf',sep=''))
+  #pdf("temp3.pdf")
+  fname<-paste("panel", as.character(pnl), ".pdf", sep="")
+  cairo_pdf(fname, family = "Yu Gothic")
+  for (smp in samples){
+    for (cat in 1:15){
+      if (max(catdat$panel==pnl & catdat$sample==smp & catdat$category==paste('cat',cat,sep='')))
+        inddat[pnl,cat,smp]<-catdat[catdat$panel==pnl & catdat$sample==smp & catdat$category==paste('cat',cat,sep=''),]$value
+    }
+    cflavor[3,]<-meandat[smp,1:7]
+    cflavor[4,]<-inddat[pnl,1:7,smp]
+    ctaste[3,]<-meandat[smp,9:15]
+    ctaste[4,]<-inddat[pnl,9:15,smp]
+    # 風味
+    par(mfrow = c(1, 2))
+    radarchart(cflavor,
+               cglty = 1,       # Grid line type
+               cglcol = "gray", # Grid line color
+               cglwd = 1,       # Line width of the grid
+               pcol=2:3,
+               plwd = 3,        # Width of the line
+               plty = 1,        # Line type of the line 
+               axistype = 0,
+               seg=6, 
+               vlcex=0.8, 
+               centerzero=TRUE, 
+               vlabels = colnames(flavor))
+    legend("bottomleft",
+           legend = c('平均','あなた'),
+           bty = "n", pch = 20, col = 2:3,
+           text.col = "grey25", cex = 0.7)
+    r<-round(cor(t(cflavor[3,]),t(cflavor[4,])),2)
+    title(paste("sample", as.character(smp), ", flavor:", as.character(r)))
+    # 味
+    radarchart(ctaste,
+               cglty = 1,       # Grid line type
+               cglcol = "gray", # Grid line color
+               cglwd = 1,       # Line width of the grid
+               pcol=2:3,
+               plwd = 3,        # Width of the line
+               plty = 1,        # Line type of the line 
+               axistype = 0, 
+               seg=6, 
+               vlcex=0.8, 
+               centerzero=TRUE, 
+               vlabels = colnames(taste))
+    
+    legend("bottomleft",
+           legend = c('平均','あなた'),
+           bty = "n", pch = 20, col = 2:3,
+           text.col = "grey25", cex=0.7)
+    r<-round(cor(t(ctaste[3,]),t(ctaste[4,])),2)
+    title(paste("sample", as.character(smp), ", taste:", as.character(r)))
+    
+  }
+  dev.off()
+    
+}
 
 par(mfrow = c(1, 2))
 
