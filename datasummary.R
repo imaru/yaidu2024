@@ -152,6 +152,9 @@ for (pnl in panels){
     
 }
 
+
+# 平均の図
+
 par(mfrow = c(1, 2))
 
 # 風味
