@@ -13,7 +13,7 @@ if (Sys.info()['sysname']=='Windows'){
     `Yu Gothic` = windowsFont("Yu Gothic")
   )
 }else{
-  par(family = "Hiragino Sans")
+  par(family="Hiragino Sans W3")
   quartzFonts(
     `Hiragino Sans` = quartzFont(rep("HiraginoSans-W3", 4)),
     `Hiragino Mincho ProN` = quartzFont(rep("HiraMinProN-W3", 4))
@@ -25,7 +25,7 @@ nword<-17
 wdlb<-c('硬さ','口どけ','なめらか','油まとわり','飲後さらっ','触感','コク','濃厚','後味','異味','まろやか','甘味','甘い香','ロウ','酸味','香ばしい','総合')
 
 # データ読み込みと整形
-fn<-choose.files()
+fn<-file.choose()
 dat<-qualtRics::read_survey(fn)
 
 wddat<-data.frame()
@@ -35,6 +35,7 @@ for (i in seq(1,nrow(dat))){
   }
 }
 wddat$value<-as.numeric(wddat$value)
+wddat$wdtext<-wdlb[as.numeric(wddat$word)]
 
 # 不完全データ除外
 wddat<-drop_na(wddat)
@@ -73,7 +74,11 @@ colnames(cdata)<-wdlb
 # 個人別レーダーチャートのPDF作成
 for (pnl in 1:npanel){
   fname<-paste("dx_panel", as.character(panels[pnl]), ".pdf", sep="")
-  cairo_pdf(fname, family = "Yu Gothic")
+  if (Sys.info()['sysname']=='Windows'){
+    cairo_pdf(fname, family = "Yu Gothic")
+  }else{
+    quartz(type="pdf", file=fname, width=8, height=10)
+  }
   for (smp in 1:nsample){
     for (wd in 1:nword){
       inddat[pnl,wd,smp]<-wddat[wddat$panel==panels[pnl] & wddat$sample==samples[smp] & wddat$word==wd,]$value
