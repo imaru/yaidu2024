@@ -34,6 +34,9 @@ for (i in seq(1,nrow(dat))){
   wddat<-rbind(wddat, c(dat$Q2[i], dat$Q3[i], j, as.numeric(dat[i,19+j])))
   }
 }
+
+
+colnames(wddat)<-c('panel','sample','word', 'value')
 wddat$value<-as.numeric(wddat$value)
 wddat$wdtext<-wdlb[as.numeric(wddat$word)]
 
@@ -41,7 +44,7 @@ wddat$wdtext<-wdlb[as.numeric(wddat$word)]
 wddat<-drop_na(wddat)
 
 # パネル数、サンプル数抽出
-colnames(wddat)<-c('panel','sample','word', 'value')
+
 samples<-unique(wddat$sample)
 samples<-samples[!is.na(samples)]
 nsample<-length(samples)
@@ -134,6 +137,6 @@ legend("bottomleft",
 g<-list()
 for (i in 1:nsample){
   thisdata<-wddat[which(wddat$sample==samples[i]),]
-  g[[i]]<-ggplot(data=thisdata, aes(x=wdtext, y=value))+geom_violin()+title(paste('sample',samples[i]))
+  g[[i]]<-ggplot(data=thisdata, aes(x=wdtext, y=value))+geom_violin()
 }
 wrap_plots(g)+plot_layout(ncol=1)
