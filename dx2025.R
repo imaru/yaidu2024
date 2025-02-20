@@ -84,7 +84,8 @@ for (pnl in 1:npanel){
   }
   for (smp in 1:nsample){
     for (wd in 1:nword){
-      inddat[pnl,wd,smp]<-wddat[wddat$panel==panels[pnl] & wddat$sample==samples[smp] & wddat$word==wd,]$value
+      if (max(wddat$panel==panels[pnl] & wddat$sample==samples[smp] & wddat$word==wd))
+        inddat[pnl,wd,smp]<-wddat[wddat$panel==panels[pnl] & wddat$sample==samples[smp] & wddat$word==wd,]$value
     }
     cdata[3,]<-meandat[smp,]
     cdata[4,]<-inddat[pnl,,smp]
