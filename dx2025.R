@@ -41,7 +41,7 @@ wddat$value<-as.numeric(wddat$value)
 wddat$wdtext<-wdlb[as.numeric(wddat$word)]
 
 # 不完全データ除外
-wddat<-drop_na(wddat)
+#wddat<-drop_na(wddat)
 
 # パネル数、サンプル数抽出
 
