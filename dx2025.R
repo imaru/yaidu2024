@@ -13,11 +13,12 @@ if (Sys.info()['sysname']=='Windows'){
     `Yu Gothic` = windowsFont("Yu Gothic")
   )
 }else{
-  par(family="Hiragino Sans W3")
+  par(family="Hiragino Sans")
   quartzFonts(
     `Hiragino Sans` = quartzFont(rep("HiraginoSans-W3", 4)),
     `Hiragino Mincho ProN` = quartzFont(rep("HiraMinProN-W3", 4))
   )
+  theme_update(text = element_text(family = "Hiragino Sans")) # 追加
 }
 
 # 評価語設定n
@@ -138,6 +139,6 @@ legend("bottomleft",
 g<-list()
 for (i in 1:nsample){
   thisdata<-wddat[which(wddat$sample==samples[i]),]
-  g[[i]]<-ggplot(data=thisdata, aes(x=wdtext, y=value))+geom_violin()
+  g[[i]]<-ggplot(data=thisdata, aes(x=wdtext, y=value))+geom_jitter(height = 0, width = 0.1)
 }
 wrap_plots(g)+plot_layout(ncol=1)
