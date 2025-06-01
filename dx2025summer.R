@@ -130,7 +130,9 @@ for (pnl in 1:npanel){
   }else{
     quartz(type="pdf", file=fname, width=8, height=10)
   }
+  
   for (smp in 1:nsample){
+    
     for (fct in 1:nfactor){
       if (max(fctdat$panel==panels[pnl] & fctdat$sample==smp & fctdat$factor==fct))
         inddat[pnl,fct,smp]<-fctdat[fctdat$panel==panels[pnl] & fctdat$sample==smp & fctdat$factor==fct,]$value
@@ -156,7 +158,6 @@ for (pnl in 1:npanel){
            text.col = "grey25", cex = 0.7)
     r<-round(cor(t(cdata[3,]),t(cdata[4,])),2)
     title(paste("sample", as.character(samples[smp])))
-    
   }
   dev.off()
 }
