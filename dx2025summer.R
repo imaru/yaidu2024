@@ -83,8 +83,8 @@ for (i in 1:npanel){
 colnames(fctdat)<-c('panel','sample','factor','value')
 
 
-wddat$value<-as.numeric(wddat$value)
-wddat$wdtext<-wdlb[as.numeric(wddat$word)]
+#wddat$value<-as.numeric(wddat$value)
+#wddat$wdtext<-wdlb[as.numeric(wddat$word)]
 
 # 不完全データ除外
 wddat<-drop_na(wddat)
