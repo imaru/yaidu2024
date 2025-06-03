@@ -167,16 +167,17 @@ mmmean<-rbind(mm,meandat)
 radarchart(mmmean,
            cglty = 1,       # Grid line type
            cglcol = "gray", # Grid line color
-           cglwd = 1,       # Line width of the grid
+           cglwd = 2,       # Line width of the grid
            pcol=1:nsample,
-           plwd = 3,        # Width of the line
+           plwd = 4,        # Width of the line
            plty = 1,        # Line type of the line 
            axistype = 0, 
            seg=6, 
-           vlcex=0.8, 
+           vlcex=1.2, 
            centerzero=TRUE, 
            vlabels = colnames(meandat))
-legend("bottomleft",
+
+legend("topright",
        legend = samples,
        bty = "n", pch = 20, col = 1:nsample,
        text.col = "grey25", cex = 0.7)
@@ -186,6 +187,15 @@ legend("bottomleft",
 g<-list()
 for (i in 1:nsample){
   thisdata<-fctdat[which(fctdat$sample==i),]
-  g[[i]]<-ggplot(data=thisdata, aes(x=as.factor(factor), y=value))+geom_jitter(height = 0, width = 0.1)
+  g[[i]]<-ggplot(data=thisdata, aes(x=as.factor(factor), y=value))+geom_jitter(height = 0, width = 0.1,size=3.0) +
+    theme_bw(base_size = 16) +  # 基本フォントサイズを16に
+    theme(
+      text = element_text(family = "Hiragino Sans"),  # フォント設定
+      axis.text = element_text(size = 18, face = "bold"),  # 軸ラベルを大きく太字
+      axis.title = element_text(size = 20, face = "bold"),  # 軸タイトルを大きく太字
+      axis.line = element_line(size = 1.5),  # 軸線を太く
+      axis.ticks = element_line(size = 1.5)  # 軸目盛りを太く
+    )+
+    scale_x_discrete(labels=fctlb)+xlab('因子')
 }
 wrap_plots(g)+plot_layout(ncol=1)
