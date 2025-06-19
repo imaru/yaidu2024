@@ -71,11 +71,13 @@ samples<-unique(wddat$sample)
 nsample<-length(samples)
 fctdat<-data.frame()
 for (i in 1:npanel){
-  for (j in 1:nsample){
+  smppnl<-unique(wddat[wddat$panel==panels[i],]$sample)
+  nsmppnl<-length(smppnl)
+  for (j in 1:nsmppnl){
     thisdat<-array(NA,nfactor)
     for (k in 1:nfactor){
       thisdat<-sum(wddat[which(wddat$panel==panels[i] & wddat$sample==samples[j]),4] * fctr[k,],na.rm=T)/sum(!is.na(fctr[k,]))
-      fctdat<-rbind(fctdat,c(i,j,k,thisdat))  
+      fctdat<-rbind(fctdat,c(panels[i],samples[j],k,thisdat))  
     }
     
   }
@@ -103,9 +105,9 @@ wddat<-drop_na(wddat)
 samplemean<-matrix(NA,nrow=nsample,ncol=nfactor)
 for (smp in 1:nsample){
   for (fct in 1:nfactor){
-    data<-fctdat[fctdat$factor==fct & fctdat$sample==smp,]$value
+    data<-fctdat[fctdat$factor==fct & fctdat$sample==samples[smp],]$value
     print(data)
-    samplemean[smp,fct]<-mean(data, na.rm = T)
+    samplemean[smp,fct]<-mean(as.numeric(data), na.rm = T)
   }
 }
 
@@ -130,15 +132,15 @@ for (pnl in 1:npanel){
   }else{
     quartz(type="pdf", file=fname, width=8, height=10)
   }
-  
-  for (smp in 1:nsample){
-    
+  smppnl<-unique(wddat[wddat$panel==panels[pnl],]$sample)
+  nsmppnl<-length(smppnl)
+  for (smp in 1:nsmppnl){
     for (fct in 1:nfactor){
-      if (max(fctdat$panel==panels[pnl] & fctdat$sample==smp & fctdat$factor==fct))
-        inddat[pnl,fct,smp]<-fctdat[fctdat$panel==panels[pnl] & fctdat$sample==smp & fctdat$factor==fct,]$value
+      if (max(fctdat$panel==panels[pnl] & fctdat$sample==samples[smp] & fctdat$factor==fct))
+        inddat[pnl,fct,smp]<-fctdat[fctdat$panel==panels[pnl] & fctdat$sample==samples[smp] & fctdat$factor==fct,]$value
     }
     cdata[3,]<-meandat[smp,]
-    cdata[4,]<-inddat[pnl,,smp]
+    cdata[4,]<-as.numeric(inddat[pnl,,smp])
     # 風味
     radarchart(cdata,
                cglty = 1,       # Grid line type
@@ -167,17 +169,16 @@ mmmean<-rbind(mm,meandat)
 radarchart(mmmean,
            cglty = 1,       # Grid line type
            cglcol = "gray", # Grid line color
-           cglwd = 2,       # Line width of the grid
+           cglwd = 1,       # Line width of the grid
            pcol=1:nsample,
-           plwd = 4,        # Width of the line
+           plwd = 3,        # Width of the line
            plty = 1,        # Line type of the line 
            axistype = 0, 
            seg=6, 
-           vlcex=1.2, 
+           vlcex=0.8, 
            centerzero=TRUE, 
            vlabels = colnames(meandat))
-
-legend("topright",
+legend("bottomleft",
        legend = samples,
        bty = "n", pch = 20, col = 1:nsample,
        text.col = "grey25", cex = 0.7)
@@ -186,16 +187,9 @@ legend("topright",
 # 普通のグラフの表示
 g<-list()
 for (i in 1:nsample){
-  thisdata<-fctdat[which(fctdat$sample==i),]
-  g[[i]]<-ggplot(data=thisdata, aes(x=as.factor(factor), y=value))+geom_jitter(height = 0, width = 0.1,size=3.0) +
-    theme_bw(base_size = 16) +  # 基本フォントサイズを16に
-    theme(
-      text = element_text(family = "Hiragino Sans"),  # フォント設定
-      axis.text = element_text(size = 18, face = "bold"),  # 軸ラベルを大きく太字
-      axis.title = element_text(size = 20, face = "bold"),  # 軸タイトルを大きく太字
-      axis.line = element_line(size = 1.5),  # 軸線を太く
-      axis.ticks = element_line(size = 1.5)  # 軸目盛りを太く
-    )+
-    scale_x_discrete(labels=fctlb)+xlab('因子')
+  thisdata<-fctdat[which(fctdat$sample==samples[i]),]
+  thisdata$value<-as.numeric(thisdata$value)
+  thisdata$factor<-fctlb
+  g[[i]]<-ggplot(data=thisdata, aes(x=as.factor(factor), y=value))+geom_jitter(height = 0, width = 0.1)+ylim(-3,3)
 }
 wrap_plots(g)+plot_layout(ncol=1)
