@@ -4,7 +4,7 @@ library(patchwork)
 library(tidyr)
 library(fmsb)
 
-# 表示・保存のためのフォント設定
+# 表示・保存のためのフォント設定 
 # if (Sys.info()['sysname']=='Windows'){
 #   par(family = "Yu Gothic")
 #   
