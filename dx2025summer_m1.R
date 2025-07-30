@@ -4,6 +4,7 @@ library(patchwork)
 library(tidyr)
 library(fmsb)
 
+
 # 表示・保存のためのフォント設定
 # if (Sys.info()['sysname']=='Windows'){
 #   par(family = "Yu Gothic")
@@ -52,7 +53,7 @@ fct1<-c(1,1,1,1,-1, rep(NA,13))
 fct2<-c(rep(NA,5),1,1,1,1,1,1,rep(NA,7))
 fct3<-c(rep(NA,11),1,1,1,-1,1,1,-1)
 fctr<-data.frame(rbind(fct1,fct2,fct3))
-smpls<-c('A','B','C','D','E')
+smpls<-c('A','B','C','D','E','F','G','H','I','J')
 
 # データ読み込みと整形
 fn<-file.choose()
@@ -61,10 +62,10 @@ dat<-qualtRics::read_survey(fn)
 wddat<-data.frame()
 for (i in seq(1,nrow(dat))){
   for (j in 1:nword){
-    wddat<-rbind(wddat, c(dat$Q8[i], dat$Q3[i], dat$Q9[i], j, as.numeric(dat[i,20+j])))
+    wddat<-rbind(wddat, c(i, dat$Q8[i], dat$Q3[i], dat$Q9[i], j, as.numeric(dat[i,20+j])))
   }
 }
-colnames(wddat)<-c('group','sample','eval', 'item', 'answer')
+colnames(wddat)<-c('panel','group','sample','eval', 'item', 'answer')
 wddat$answer<-(nscl+1)/2-as.numeric(wddat$answer)
 groups<-unique(wddat$group)
 ngroup<-length(groups)
@@ -97,14 +98,17 @@ for (i in 1:ngroup){
     for (k in 1:neval){
       thisdat<-array(NA,nfactor)
       for (l in 1:nfactor){
-        thisdat<-sum(wddat[which(wddat$group==groups[i] & wddat$sample==smpgrp[j] & wddat$eval==evalsmp[k]),5] * fctr[l,],na.rm=T)/sum(!is.na(fctr[l,]))  
-        fctdat<-rbind(fctdat,c(groups[i],smpgrp[j],evalsmp[k],l,thisdat))  
+        alldat<-wddat[which(wddat$group==groups[i] & wddat$sample==smpgrp[j] & wddat$eval==evalsmp[k]),6]
+        thiswgt<-as.numeric(rep(fctr[l,], length(alldat)/nword))
+        thisdat[l]<-sum(alldat * thiswgt, na.rm=T)/sum(abs(thiswgt),na.rm = T)
+        #thisdat<-sum(wddat[which(wddat$group==groups[i] & wddat$sample==smpgrp[j] & wddat$eval==evalsmp[k]),5] * fctr[l,],na.rm=T)/sum(!is.na(fctr[l,]))  
+        fctdat<-rbind(fctdat,c(groups[i],smpgrp[j],evalsmp[k],l,thisdat[l]))  
       }
       cdata[2+k,]<-thisdat
     }
-    colnames(fctdat)<-c('group','sample','eval','factor','value')
+    colnames(fctdat)<-c('group','sample','eval','fct','value')
     colnames(cdata)<-fctlb
-    print(cdata)
+    #print(cdata)
     radarchart(cdata,
                cglty = 1,       # Grid line type
                cglcol = "gray", # Grid line color
@@ -121,14 +125,16 @@ for (i in 1:ngroup){
            legend = evalsmp,
            bty = "n", pch = 20, col = 2:5,
            text.col = "grey25", cex = 0.7)
-    g<-list()
+    # rm(thisdata)
     for (k in 1:neval){
-      thisdata<-fctdat[which(fctdat$group==groups[i] & fctdat$sample==smpgrp[j]),]
+      thisdata<-fctdat[which(fctdat$group==groups[i] & fctdat$sample==smpgrp[j] & fctdat$eval==evalsmp[k]),]
+      print(thisdata)
       thisdata$value<-as.numeric(thisdata$value)
-      thisdata$factor<-fctlb
-      g[[i]]<-ggplot(data=thisdata, aes(x=as.factor(factor), y=value))+geom_jitter(height = 0, width = 0.1)+ylim(-3,3)
+      thisdata$fct<-fctlb
+      g<-ggplot(data=thisdata, aes(x=fct, y=value))+geom_bar(stat="identity")+ylim(-3,3)
+      plot(g)
     }
-    wrap_plots(g)+plot_layout(ncol=1)
+    #wrap_plots(g)+plot_layout(ncol=1)
   }
   dev.off()
 }
