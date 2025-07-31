@@ -76,7 +76,7 @@ colnames(mm)<-fctlb
 
 fctdat<-data.frame()
 for (i in 1:ngroup){
-  fname<-paste("dx_panel", as.character(groups[i]), ".pdf", sep="")
+  fname<-paste("Group", as.character(groups[i]), ".pdf", sep="")
   if (Sys.info()['sysname']=='Windows'){
     cairo_pdf(fname, family = "Yu Gothic")
   }else if(Sys.info()["sysname"] == "Linux") {
