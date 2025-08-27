@@ -8,7 +8,6 @@ rm(list=ls())
 
 fn<-file.choose()
 tdat<-qualtRics::read_survey(fn,col_types = readr::cols(Q11=readr::col_character()))
-tdat<-transform(tdat, Q11=factor(Q11, levels=c('文化部','運動部','その他の活動','所属していない','答えない')))
 
 all<-nrow(tdat)
 cons<-sum(tdat$Q2=='同意する')
@@ -19,6 +18,7 @@ dat<-tdat[(tdat$Q2=='同意する' & tdat$Q9=='辞退しない'),]
 
 dat$Q11f<-apply(dat,1,function(x){
   temp<-strsplit(x[23],',')
+  print(temp)
   return(temp[[1]][1])
 })
 
