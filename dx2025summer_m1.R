@@ -4,6 +4,8 @@ library(patchwork)
 library(tidyr)
 library(fmsb)
 
+rm(list=ls())
+
 # https://ill-identified.hatenablog.com/entry/2020/10/03/200618 フォント設定
 if(Sys.info()["sysname"] == "Windows"){
   if(as.integer(str_extract(Sys.info()["release"], "^[0-9]+")) >=8){
@@ -134,7 +136,7 @@ for (i in 1:ngroup){
       pnldat$fact<-fctlb
       
       gp<-ggplot(data=thispdata, aes(x=fact,y=value))+geom_boxplot()
-      gp<-gp+geom_jitter(width=0.1, height=0)+ylim(-3,3)
+      gp<-gp+geom_jitter(width=0.1, height=0)#+ylim(-3,3)
       gp<-gp+stat_summary(fun = mean, geom='point', shape=20, size=6, color='red')
       gp<-gp+stat_summary(fun = mean, geom = 'text',aes(label=after_stat(y)),position=position_nudge(y=0.25))
       gp<-gp+labs(title=paste0(ttl,'-#',as.character(k)))
